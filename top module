@@ -1,0 +1,14 @@
+module top_module(
+    input clk, // fpga board clock
+    input sw, // switch to enable the clock
+    input btnC, // reset the clock
+    output[6:0]seg,
+    output[3:0]en,
+    input[5:0]led // displaying the seconds using leds
+    );
+    wire[3:0]s1,s2,m1,m2,h1,h2;
+    
+    display_7seg(1'b0, clk, m2, m1, h2, h1, seg, en);
+    dgc(clk, btnC, sw, s1, s2, m1, m2, h1, h2);
+     assign led[5:0]={s2,s1};
+endmodule
