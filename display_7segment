@@ -1,0 +1,53 @@
+module display_7seg(input rst,clk,
+input [3:0] dis0_inp,dis1_inp,dis2_inp,dis3_inp,
+output [6:0] segment,
+output reg [7:0] display_enable );
+reg divclk=0;
+reg [26:0] count=0;
+reg [3:0] tmp;
+reg [1:0] state; 
+initial state=2'b00;
+decoder_7seg uut(.din(tmp),.rst(rst),.seg(seg));
+always@(posedge clk)
+begin
+if(rst)
+    count=0;
+else if(count==50000000)
+begin
+    divclk=~divclk;
+    count=0;
+   end
+else
+    count=count+1;
+  end
+  
+always@(posedge divclk)
+begin
+if(rst)
+    display_enable=8'b11111111;
+else begin
+    case(state)
+    2'b00:begin
+          tmp=dis0_inp;
+          display_enable=8'b11111110;
+          state=2'b01;
+          end
+    2'b01:begin
+          tmp=dis1_inp;
+                display_enable=8'b11111101;
+                state=2'b10;
+                end
+    2'b10:begin
+                      tmp=dis2_inp;
+                      display_enable=8'b11111011;
+                      state=2'b11;
+                      end
+      2'b11:begin
+                      tmp=dis3_inp;
+                      display_enable=8'b11110111;
+                      state=2'b00;
+         end
+      endcase
+   end
+   end
+endmodule
