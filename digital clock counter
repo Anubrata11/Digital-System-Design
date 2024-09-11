@@ -1,0 +1,57 @@
+module dgc(
+    input clk,
+    input rst,
+    input en,
+    output[3:0]s1,
+    output[3:0]s2,
+    output[3:0]m1,
+    output[3:0]m2,
+    output[3:0]h1,
+    output[3:0]h2
+    );
+    reg[5:0]min,hr,sec;
+    integer clkc=0;
+    localparam onesec=100_000_00;
+    always@(posedge clk) begin
+    //resetting the clock
+    if(rst) begin
+        sec<=0;
+        min<=0;
+        hr<=0;
+    end
+    
+    // setting the clock
+    if(min==6'd59)
+    min<=0;
+    else min<=min+1'd1; 
+    if(hr==6'd23)
+    hr<=0;
+    else hr<=hr+1'd1;
+    
+    //counting 
+    if(en==1'b1)
+    if(clkc==onesec)
+    begin
+    if(sec<=6'd59) begin
+    sec<=0;
+    if(min==6'd59) begin
+    min<=0;
+    if(hr==6'd23)
+    hr<=0;
+    else
+    hr<=hr+1'd1;
+    end
+    else 
+    min<=min+1'd1;
+    end
+    else
+    sec<=sec+1'd1;
+    end
+    else
+    clkc<=clkc+1;
+    end
+    
+  bin_to_bcd secs(.binary(sec),.thou(),.hund(),.tens(s1),.ones(s2));
+  bin_to_bcd mins(.binary(min),.thou(),.hund(),.tens(m1),.ones(m2));
+  bin_to_bcd hours(.binary(hr),.thou(),.hund(),.tens(h1),.ones(h2));
+endmodule
